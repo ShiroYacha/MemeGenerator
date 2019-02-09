@@ -24,7 +24,7 @@ class App extends Component {
             let output = document.getElementById('co')
             let context = output.getContext('2d')
             context.clearRect(0, 0, output.width, output.height)
-            if(this.analyzing){
+            if (this.analyzing) {
                 event.data.forEach(function (rect) {
                     context.strokeStyle = '#a64ceb'
                     context.lineWidth = 2;
@@ -35,20 +35,20 @@ class App extends Component {
                     context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22)
                 })
             }
-            if(event.data.some(trect=>{
+            if (event.data.some(trect => {
                 var embedded = false;
                 event.data.forEach(function (rect) {
-                    if (rect.x+rect.width < trect.x + trect.width && rect.x > trect.x && rect.y > trect.y && rect.y + rect.height < trect.y + trect.height) {
+                    if (rect.x + rect.width < trect.x + trect.width && rect.x > trect.x && rect.y > trect.y && rect.y + rect.height < trect.y + trect.height) {
                         embedded = true;
                     }
                 });
                 return embedded;
             })) {
-                if(this.analyzing) {
+                if (this.analyzing) {
                     this.thugIndex = this.index;
                     console.log(this.index);
                 }
-                else if (this.thugIndex == this.index){
+                else if (this.thugIndex == this.index) {
                     playpause(); // eslint-disable-line
                 }
             }
@@ -100,8 +100,14 @@ class App extends Component {
                     this.index = index;
                     if (index === 0) {
                         this.analyzing = !this.analyzing;
+                        if (!this.analyzing) {
+                            // clear
+                            let output = document.getElementById('co')
+                            let context = output.getContext('2d')
+                            context.clearRect(0, 0, output.width, output.height)
+                        }
                     }
-                    if (this.trackTask) {
+                    if (this.trackTask && (this.analyzing || this.index === this.thugIndex)) {
                         this.trackTask.stop();
                         this.trackTask.run();
                     }
