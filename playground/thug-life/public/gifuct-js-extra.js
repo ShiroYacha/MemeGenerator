@@ -114,9 +114,7 @@ function renderFrame(callback) {
     manipulate();
 
     // perform callback
-    if (callback) {
-        callback();
-    }
+    callback(frameIndex);
 
     // update the frame index
     frameIndex++;
