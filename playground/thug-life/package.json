@@ -6,6 +6,7 @@
     "@material-ui/core": "^3.9.2",
     "howler": "^2.1.1",
     "react": "^16.8.1",
+    "react-device-detect": "^1.6.2",
     "react-dom": "^16.8.1",
     "react-load-script": "^0.0.6",
     "react-pose": "^4.0.6",

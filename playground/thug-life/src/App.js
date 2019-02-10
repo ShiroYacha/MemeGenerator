@@ -7,6 +7,12 @@ import 'tracking/build/data/eye'
 import { Howl, Howler } from 'howler';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import {
+    BrowserView,
+    MobileView,
+    isBrowser,
+    isMobile
+} from "react-device-detect";
 
 class App extends Component {
 
@@ -26,7 +32,7 @@ class App extends Component {
             glassWidth: 0,
             url: null,
             running: false,
-            message: 'e.g. https://media.giphy.com/media/yJFeycRK2DB4c/giphy.gif',
+            message: '💡 click here to try an example ',
             sharable: false
         }
     }
@@ -134,8 +140,8 @@ class App extends Component {
     }
 
     handleClickMessage = () => {
-        if (this.state.message.indexOf('e.g. ') > -1) {
-            this.setState({ url: this.state.message.replace('e.g. ', '')});
+        if (this.state.message.indexOf('click here') > -1) {
+            this.setState({ url: 'https://media.giphy.com/media/yJFeycRK2DB4c/giphy.gif' });
         }
     }
 
@@ -152,13 +158,13 @@ class App extends Component {
                     onLoad={this.handleScriptLoad}
                 />
                 <div style={{ margin: 'auto', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', marginBottom: 10 }}>
-                        <TextField id="url" value={this.state.url} onChange={this.handleUrlChange} type="url" style={{ width: '30vw', height: 50 }} variant='outlined' placeholder='Paste a GIF URL ...' />
-                        <Button disabled={!this.state.url || !this.state.scriptLoaded || this.state.running} onClick={this.handleGenerateClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
+                    <div style={{ display: 'flex', flexDirection: `${isMobile ? 'column' : 'row'}`, marginBottom: 10 }}>
+                        <TextField id="url" value={this.state.url} onChange={this.handleUrlChange} type="url" style={{ width: isMobile ? '90vw' : '30vw', height: 50 }} variant='outlined' placeholder='Paste a GIF URL ...' />
+                        <Button disabled={!this.state.url || !this.state.scriptLoaded || this.state.running} onClick={this.handleGenerateClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: isMobile ? 'auto' : 5, marginRight: isMobile ? 'auto' : 5, marginTop: isMobile ? 10 : 0, height: 50, width: isMobile ? '50vw' : undefined }}>
                             <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>😎</span>
                             GO
                         </Button>
-                        <Button disabled={!this.state.sharable} onClick={this.handleShareClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
+                        <Button disabled={!this.state.sharable} onClick={this.handleShareClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: isMobile ? 'auto' : 5, marginRight: isMobile ? 'auto' : 5, marginTop: isMobile ? 10 : 0, height: 50, width: isMobile ? '50vw' : undefined }}>
                             <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>🔗</span>
                             Share
                         </Button>
