@@ -13,8 +13,52 @@ class App extends Component {
     index = -1;
     thugIndex = -1;
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            width : 0,
+            height: 0
+        }
+    }
+
     componentDidMount() {
         this.tracker = new window.tracking.ObjectTracker(['face', 'eye']);
+    }
+
+    componentWillUnmount() {
+        this.tracker.removeAllListeners()
+    }
+
+    render() {
+        return (
+            <div className="App" style={{ width: '100vw', height: '100vh', display: 'flex' }}>
+                <Script
+                    url="gifuct-js.js"
+                />
+                <Script
+                    url="gifuct-js-extra.js"
+                    onCreate={this.handleScriptCreate}
+                    onError={this.handleScriptError}
+                    onLoad={this.handleScriptLoad}
+                />
+                <div style={{ position: 'relative', width: this.state.width, height: this.state.height, margin: 'auto' }}>
+                    {/* <img id="imgi" width={500} height={300} src={`https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500`} /> */}
+                    <canvas style={{ position: 'absolute', left: '0', top: '0',  }} width={this.state.width} height={this.state.height} ref="input" id="c"></canvas>
+                    <canvas style={{ position: 'absolute', left: '0', top: '0',  }} width={this.state.width} height={this.state.height} ref="output" id="co"></canvas>
+                </div>
+            </div>
+        );
+    }
+
+    handleScriptCreate = () => {
+        this.setState({ scriptLoaded: false })
+    }
+
+    handleScriptError = () => {
+        this.setState({ scriptError: true })
+    }
+
+    initializeTracker = () => {
         // this.tracker.setInitialScale(4);
         // this.tracker.setStepSize(2);
         // this.tracker.setEdgesDensity(0.1);
@@ -59,39 +103,6 @@ class App extends Component {
         });
     }
 
-    componentWillUnmount() {
-        this.tracker.removeAllListeners()
-    }
-
-    render() {
-        return (
-            <div className="App">
-                <Script
-                    url="gifuct-js.js"
-                />
-                <Script
-                    url="gifuct-js-extra.js"
-                    onCreate={this.handleScriptCreate}
-                    onError={this.handleScriptError}
-                    onLoad={this.handleScriptLoad}
-                />
-                <div style={{ position: 'relative' }}>
-                    {/* <img id="imgi" width={500} height={300} src={`https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500`} /> */}
-                    <canvas style={{ position: 'absolute', left: '0', top: '0', margin: 'auto' }} ref="input" width={500} height={300} id="c"></canvas>
-                    <canvas style={{ position: 'absolute', left: '0', top: '0', margin: 'auto' }} ref="output" width={500} height={300} id="co"></canvas>
-                </div>
-            </div>
-        );
-    }
-
-    handleScriptCreate = () => {
-        this.setState({ scriptLoaded: false })
-    }
-
-    handleScriptError = () => {
-        this.setState({ scriptError: true })
-    }
-
     handleScriptLoad = () => {
         this.setState({ scriptLoaded: true });
         fetch(`https://media.giphy.com/media/ZxBqnlS79n63OZsq6o/giphy.gif`)
@@ -100,21 +111,27 @@ class App extends Component {
             .then(gif => {
                 var frames = gif.decompressFrames(true);
                 this.analyzing = false;
-                renderGIF(frames, (index) => { // eslint-disable-line
-                    this.index = index;
-                    if (index === 0) {
-                        this.analyzing = !this.analyzing;
-                        if (!this.analyzing) {
-                            // clear
-                            let output = document.getElementById('co')
-                            let context = output.getContext('2d')
-                            context.clearRect(0, 0, output.width, output.height)
+                this.setState({
+                    width: frames[0].dims.width,
+                    height: frames[0].dims.height
+                }, ()=>{
+                    this.initializeTracker();
+                    renderGIF(frames, (index) => { // eslint-disable-line
+                        this.index = index;
+                        if (index === 0) {
+                            this.analyzing = !this.analyzing;
+                            if (!this.analyzing) {
+                                // clear
+                                let output = document.getElementById('co')
+                                let context = output.getContext('2d')
+                                context.clearRect(0, 0, output.width, output.height)
+                            }
                         }
-                    }
-                    if (this.trackTask && (this.analyzing || this.index === this.thugIndex)) {
-                        this.trackTask.stop();
-                        this.trackTask.run();
-                    }
+                        if (this.trackTask && (this.analyzing || this.index === this.thugIndex)) {
+                            this.trackTask.stop();
+                            this.trackTask.run();
+                        }
+                    });
                 });
             });
     }
