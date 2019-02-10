@@ -200,25 +200,55 @@ class App extends Component {
             var glassWidth = 0;
             var glassLeft = 0;
             var glassTop = 0;
-            if (event.data.some(outerRect => {
-                var embedded = false;
-                event.data.forEach(function (innerRect) {
-                    if (innerRect.x + innerRect.width < outerRect.x + outerRect.width && innerRect.x > outerRect.x && innerRect.y > outerRect.y && innerRect.y + innerRect.height < outerRect.y + outerRect.height) {
-                        embedded = true;
-                        glassWidth = outerRect.width - (2 * (innerRect.x - outerRect.x));
-                        if (glassWidth < 0) {
-                            glassWidth = outerRect.width - (2 * (outerRect.x + outerRect.width - innerRect.x - innerRect.width));
-                            glassLeft = outerRect.x + outerRect.x + outerRect.width - innerRect.x - innerRect.width;
-                            glassTop = innerRect.y + innerRect.height / 4;
+            var detectFaceAndOneEye = (data) => {
+                const eyeYPositionThreshold = 0.5;
+                return data.some(outerRect => {
+                    var embedded = false;
+                    data.forEach(function (innerRect) {
+                        if (/* Embedding */
+                            innerRect.x + innerRect.width < outerRect.x + outerRect.width && innerRect.x > outerRect.x && innerRect.y > outerRect.y && innerRect.y + innerRect.height < outerRect.y + outerRect.height &&
+                            /* Eye positioning can't be too low */
+                            (innerRect.y - outerRect.y)/outerRect.height < eyeYPositionThreshold
+                        ) {
+                            embedded = true;
+                            glassWidth = outerRect.width - (2 * (innerRect.x - outerRect.x));
+                            if (glassWidth < 0) {
+                                glassWidth = outerRect.width - (2 * (outerRect.x + outerRect.width - innerRect.x - innerRect.width));
+                                glassLeft = outerRect.x + outerRect.x + outerRect.width - innerRect.x - innerRect.width;
+                                glassTop = innerRect.y + innerRect.height / 4;
+                            }
+                            else {
+                                glassLeft = innerRect.x;
+                                glassTop = innerRect.y + innerRect.height / 4;
+                            }
                         }
-                        else {
-                            glassLeft = innerRect.x;
-                            glassTop = innerRect.y + innerRect.height / 4;
+                    });
+                    return embedded;
+                })
+            };
+            var detectTwoEyes = (data) => {
+                const sizeDiffTolerance = 0.1;
+                const yDiffTolerance = 1;
+                return data.some(leftRect => {
+                    var embedded = false;
+                    data.forEach(function (rightRect) {
+                        if (/* Size of both rectangles must be similar*/
+                            (leftRect.width - rightRect.width) / leftRect.width < sizeDiffTolerance && (leftRect.height - rightRect.height) / leftRect.height < sizeDiffTolerance &&
+                            /* Vertical position of both rectangles must be similar */
+                            Math.abs(leftRect.y - rightRect.y) / leftRect.height < yDiffTolerance 
+                            /* Left vs. right */
+                            && leftRect.x < rightRect.x
+                        ) {
+                            embedded = true;
+                            glassWidth = rightRect.x + rightRect.width - leftRect.x;
+                            glassTop = (leftRect.y + leftRect.height/3 + rightRect.y + rightRect.height/3) / 2; // not supporting rotation yet
+                            glassLeft = leftRect.x;
                         }
-                    }
-                });
-                return embedded;
-            })) {
+                    });
+                    return embedded;
+                })
+            }
+            if (detectFaceAndOneEye(event.data) || detectTwoEyes(event.data)) {
                 if (this.analyzing) {
                     this.thugIndex = this.index;
                 }
@@ -242,7 +272,7 @@ class App extends Component {
                             src: ['thug-life.mp3'],
                             // loop: true
                         });
-                        $('#glasses').css({top: -100}); // eslint-disable-line
+                        $('#glasses').css({ top: -100 }); // eslint-disable-line
                         $('#glasses').animate({ top: glassTop }); // eslint-disable-line
                         audio.play()
                     });
