@@ -30,3 +30,10 @@
     transform: rotate(360deg);
   }
 }
+
+#glasses {
+    display: none;
+    position:relative;
+    left:0;
+    z-index:5;
+}
