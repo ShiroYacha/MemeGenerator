@@ -26,7 +26,8 @@ class App extends Component {
             glassWidth: 0,
             url: null,
             running: false,
-            message: ''
+            message: '',
+            sharable: false
         }
     }
 
@@ -118,7 +119,7 @@ class App extends Component {
                                     // stops
                                     this.trackTask.stop();
                                     playing = false; // eslint-disable-line
-                                    this.setState({ running: false, message: 'Sorry we couldn\'t process this GIF for now 😭' })
+                                    this.setState({ running: false, message: 'Sorry I am not smart enough to process this GIF at the moment 😭' })
                                 }
                             }
                         });
@@ -145,6 +146,10 @@ class App extends Component {
                         <Button disabled={!this.state.url || !this.state.scriptLoaded || this.state.running} onClick={this.handleGenerateClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
                             <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>😎</span>
                             GO
+                        </Button>
+                        <Button disabled={!this.state.sharable} onClick={this.handleGenerateClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
+                            <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>🔗</span>
+                            Share
                         </Button>
                     </div>
                     <span style={{ color: 'red', textAlign: 'start', marginBottom: 10 }}>{this.state.message}</span>
