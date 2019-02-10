@@ -26,7 +26,7 @@ class App extends Component {
             glassWidth: 0,
             url: null,
             running: false,
-            message: '',
+            message: 'e.g. https://media.giphy.com/media/yJFeycRK2DB4c/giphy.gif',
             sharable: false
         }
     }
@@ -63,7 +63,8 @@ class App extends Component {
             showGlass: false,
             glassWidth: 0,
             running: true,
-            message: ''
+            message: '',
+            sharable: false
         }, () => {
             // fetch
             this.runs = 0;
@@ -128,6 +129,16 @@ class App extends Component {
         });
     }
 
+    handleShareClick = () => {
+        alert("Coming soon ⏳ ...")
+    }
+
+    handleClickMessage = () => {
+        if (this.state.message.indexOf('e.g. ') > -1) {
+            this.setState({ url: this.state.message.replace('e.g. ', '')});
+        }
+    }
+
     render() {
         return (
             <div className="App" style={{ width: '100vw', height: '100vh', display: 'flex' }}>
@@ -147,12 +158,12 @@ class App extends Component {
                             <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>😎</span>
                             GO
                         </Button>
-                        <Button disabled={!this.state.sharable} onClick={this.handleGenerateClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
+                        <Button disabled={!this.state.sharable} onClick={this.handleShareClick} variant="contained" color="primary" aria-label="Generate" style={{ marginLeft: 10, height: 50 }}>
                             <span style={{ fontSize: 20, marginRight: 5, marginTop: 5 }}>🔗</span>
                             Share
                         </Button>
                     </div>
-                    <span style={{ color: 'red', textAlign: 'start', marginBottom: 10 }}>{this.state.message}</span>
+                    <span style={{ color: 'black', textAlign: 'start', marginBottom: 10 }} onClick={this.handleClickMessage}>{this.state.message}</span>
                     <div style={{ position: 'relative', width: this.state.width, height: this.state.height, margin: 'auto' }}>
                         <img id="glasses" style={{
                             display: this.state.showGlass ? 'block' : 'none',
@@ -208,7 +219,7 @@ class App extends Component {
                         if (/* Embedding */
                             innerRect.x + innerRect.width < outerRect.x + outerRect.width && innerRect.x > outerRect.x && innerRect.y > outerRect.y && innerRect.y + innerRect.height < outerRect.y + outerRect.height &&
                             /* Eye positioning can't be too low */
-                            (innerRect.y - outerRect.y)/outerRect.height < eyeYPositionThreshold
+                            (innerRect.y - outerRect.y) / outerRect.height < eyeYPositionThreshold
                         ) {
                             embedded = true;
                             glassWidth = outerRect.width - (2 * (innerRect.x - outerRect.x));
@@ -235,13 +246,13 @@ class App extends Component {
                         if (/* Size of both rectangles must be similar*/
                             (leftRect.width - rightRect.width) / leftRect.width < sizeDiffTolerance && (leftRect.height - rightRect.height) / leftRect.height < sizeDiffTolerance &&
                             /* Vertical position of both rectangles must be similar */
-                            Math.abs(leftRect.y - rightRect.y) / leftRect.height < yDiffTolerance 
+                            Math.abs(leftRect.y - rightRect.y) / leftRect.height < yDiffTolerance
                             /* Left vs. right */
                             && leftRect.x < rightRect.x
                         ) {
                             embedded = true;
                             glassWidth = rightRect.x + rightRect.width - leftRect.x;
-                            glassTop = (leftRect.y + leftRect.height/3 + rightRect.y + rightRect.height/3) / 2; // not supporting rotation yet
+                            glassTop = (leftRect.y + leftRect.height / 3 + rightRect.y + rightRect.height / 3) / 2; // not supporting rotation yet
                             glassLeft = leftRect.x;
                         }
                     });
@@ -265,7 +276,8 @@ class App extends Component {
                         showGlass: true,
                         glassWidth: glassWidth,
                         glassLeft: glassLeft,
-                        running: false
+                        running: false,
+                        sharable: true,
                     }, () => {
                         let glasses = document.getElementById('glasses')
                         let audio = new Howl({
