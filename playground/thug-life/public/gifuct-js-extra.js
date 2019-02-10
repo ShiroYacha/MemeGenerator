@@ -11,7 +11,7 @@ var gifCtx = gifCanvas.getContext('2d');
 var playing = false;
 var bInvert = false;
 var bGrayscale = false;
-var pixelPercent = 40;
+var pixelPercent = 100;
 var loadedFrames;
 var frameIndex;
 
@@ -99,6 +99,11 @@ function renderGIF(frames, callback) {
     if (!playing) {
         playpause(callback);
     }
+}
+
+function renderPrevious(callback) {
+    frameIndex --;
+    renderFrame(callback);
 }
 
 function renderFrame(callback) {

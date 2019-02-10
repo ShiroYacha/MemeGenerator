@@ -46,10 +46,14 @@ class App extends Component {
             })) {
                 if (this.analyzing) {
                     this.thugIndex = this.index;
-                    console.log(this.index);
                 }
                 else if (this.thugIndex == this.index) {
+                    /* thug-life moment 😎 */
+                    // pause
                     playpause(); // eslint-disable-line
+                    // grayscale
+                    bGrayscale = true; // eslint-disable-line
+                    renderPrevious(()=>{}); // eslint-disable-line
                 }
             }
         });
