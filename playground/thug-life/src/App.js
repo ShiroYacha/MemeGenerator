@@ -237,6 +237,7 @@ class App extends Component {
                             src: ['https://manzdev.github.io/cursos-assets/js/thug-life.mp3'],
                             // loop: true
                         });
+                        $('#glasses').css({top: -100}); // eslint-disable-line
                         $('#glasses').animate({ top: glassTop }); // eslint-disable-line
                         audio.play()
                     });
