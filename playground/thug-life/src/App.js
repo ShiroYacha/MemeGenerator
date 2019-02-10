@@ -234,7 +234,7 @@ class App extends Component {
                     }, () => {
                         let glasses = document.getElementById('glasses')
                         let audio = new Howl({
-                            src: ['https://manzdev.github.io/cursos-assets/js/thug-life.mp3'],
+                            src: ['thug-life.mp3'],
                             // loop: true
                         });
                         $('#glasses').css({top: -100}); // eslint-disable-line
